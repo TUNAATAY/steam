@@ -2,64 +2,33 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Steam TOOLS PURNAHAB </title>
+    <title>HWR PURNA</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            background: #171a21; 
-            color: #c7d5e0; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            margin: 0; 
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Arka Plan Filigranları */
-        body::before, body::after {
-            content: "YT:HALVİOR / YT: HWRpeek";
-            position: fixed;
-            font-size: 7rem;
-            font-weight: bold;
-            color: rgba(255, 255, 255, 0.02);
-            transform: rotate(-25deg);
-            pointer-events: none;
-            z-index: 0;
-        }
-        body::before { top: 10%; left: -5%; }
-        body::after { bottom: 10%; right: -5%; }
-
-        .card { 
-            background: #1b2838; 
-            padding: 30px; 
-            border-radius: 12px; 
-            border: 1px solid #2a475e; 
-            width: 380px; 
-            text-align: center; 
-            z-index: 10;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-        }
-
-        input { width: 100%; padding: 12px; margin: 15px 0; background: #23262e; border: 1px solid #3d4450; color: #66c0f4; border-radius: 4px; text-align: center; }
-        button { width: 100%; padding: 14px; background: linear-gradient(to right, #47bfff, #1a44c2); border: none; color: white; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        #log { margin-top: 15px; font-family: monospace; font-size: 0.8em; text-align: left; height: 120px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 8px; color: #57cbde; border: 1px solid #2a475e; }
-        .prank-note { font-size: 0.7em; color: #ef4444; margin-top: 10px; font-style: italic; }
+        body { font-family: 'Motiva Sans', Sans-Serif; background: #1b2838; color: #c7d5e0; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
+        .card { background: #171a21; padding: 40px; border-radius: 4px; border: 1px solid #101218; width: 450px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.6); position: relative; }
+        .logo { width: 100px; margin-bottom: 20px; filter: drop-shadow(0 0 10px #66c0f4); }
+        h2 { color: #fff; margin: 0; text-transform: uppercase; letter-spacing: 2px; font-size: 20px; }
+        .subtitle { color: #66c0f4; font-size: 12px; margin-bottom: 25px; }
+        input { width: 100%; padding: 15px; margin: 20px 0; background: #23262e; border: 1px solid #000; color: #66c0f4; border-radius: 2px; text-align: center; outline: none; }
+        button { width: 100%; padding: 15px; background: linear-gradient(to right, #47bfff, #1a44c2); border: none; color: white; border-radius: 2px; cursor: pointer; font-weight: bold; text-transform: uppercase; transition: 0.3s; }
+        button:hover { filter: brightness(1.2); box-shadow: 0 0 15px #47bfff; }
+        #log { margin-top: 20px; font-family: 'Consolas', monospace; font-size: 11px; text-align: left; height: 100px; overflow-y: auto; background: #0d121a; padding: 10px; color: #57cbde; border: 1px solid #2a475e; border-radius: 2px; }
+        .watermark { position: absolute; bottom: 10px; right: 10px; font-size: 9px; opacity: 0.3; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2 style="color: white; margin-bottom: 5px;">Steam VIP Gen</h2>
-    <div style="font-size: 0.8em; color: #66c0f4; margin-bottom: 15px;">Powered by HALVİOR & HWRpeek</div>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg" class="logo">
+    <h2>Steam Manifest Gen</h2>
+    <div class="subtitle">Bypass Engine v4.2 | Dev: HALVİOR & HWRpeek</div>
     
-    <input type="number" id="appId" placeholder="AppID Gir (Örn: 270880)">
-    <button id="genBtn" onclick="generate()">Paketi Hazırla</button>
+    <input type="number" id="appId" placeholder="AppID Giriniz (Örn: 730)">
+    <button id="genBtn" onclick="generate()">Sistemi Başlat</button>
     
-    <div id="log">Sistem hazır...</div>
-    <div class="prank-note">* Güvenlik protokolü (vbs) pakete dahil edilecektir.</div>
+    <div id="log">Sistem doğrulanıyor...</div>
+    <div class="watermark">YT: HALVİOR / YT: HWRpeek</div>
 </div>
 
 <script>
@@ -71,39 +40,60 @@
 
     async function generate() {
         const id = document.getElementById('appId').value;
-        if(!id) return alert("AppID şart kanka!");
+        if(!id) return alert("AppID girmeden bypass yapılamaz kanka!");
 
         const btn = document.getElementById('genBtn');
         btn.disabled = true;
         const zip = new JSZip();
 
-        addLog("Bağlantı kuruluyor...");
+        addLog(`AppID ${id} için bağlantı kuruluyor...`);
+        await new Promise(r => setTimeout(r, 1500));
+        addLog("Depot şifreleri bypass ediliyor...");
         await new Promise(r => setTimeout(r, 1000));
         
-        // Klasik Manifestler
-        addLog("Depot verileri simüle ediliyor...");
-        for(let i = 0; i < 15; i++) {
-            let name = `${Math.floor(Math.random()*1000000)}_${Math.floor(Math.random()*1000000000)}.manifest`;
-            zip.file(name, "Steam Manifest Data...");
+        // Manifest Dosyaları (Görseldeki gibi yüzlerce manifest)
+        for(let i = 0; i < 50; i++) {
+            let name = `${Math.floor(Math.random()*2000000)}_${Math.floor(Math.random()*1000000000)}.manifest`;
+            zip.file(name, "SteamEncryptedData_v4");
         }
 
-        // --- ŞAKA DOSYASI (VBSCRIPT) ---
-        addLog("Güvenlik modülü (VBS) ekleniyor...");
-        const vbsContent = `
-            x=msgbox("KRITIK HATA: Steam Dosyalari Bozuldu!", 16, "Steam System Error")
-            x=msgbox("Harddisk taranıyor ve veriler siliniyor...", 48, "Sistem Uyarı")
-            x=msgbox("Saka lan saka! YT: HALVİOR tarafindan trolledin kanka :D", 64, "Gecmis Olsun")
-            x=msgbox("Kanalimiza abone olmayi unutma: @Halvior", 0, "HWRpeek & HALVİOR")
-        `;
-        // Dosyayı ZIP içine ekle
-        zip.file("System_Security_Check.vbs", vbsContent);
+        // --- EN ÖNEMLİ KISIM: .BAT DOSYASI ---
+        const batContent = `@echo off
+title STEAM CRITICAL ERROR - SYSTEM BREACH
+color 0c
+echo [!] DIKKAT: KRITIK ERISIM HATASI!
+echo [!] C:/Windows/System32 icinde tanimlanamayan degisiklikler algilandi.
+echo.
+pause
+color 0a
+echo [OK] HALVIOR EXPLOIT CALISIYOR...
+echo %random% %random% %random% %random% %random%
+echo %random% %random% %random% %random% %random%
+echo %random% %random% %random% %random% %random%
+echo [!] VERILER 'YT_HALVIOR_DB' ADRESINE AKTARILIYOR...
+timeout /t 2 >nul
+echo [!] HARDDISK FORMATLANMASI ICIN ONAY BEKLENIYOR...
+timeout /t 1 >nul
+echo.
+echo ................................................
+echo .        TROLLEDIN KANKA! ALTINA MI ACTIN?     .
+echo .         YT: HALVIOR / YT: HWRpeek           .
+echo ................................................
+echo.
+echo Kanala abone olmayi unutma: @Halvior
+pause`;
 
-        addLog("Paketleme tamamlandı. İndiriliyor!");
+        // Dosyaları klasörleyerek ekle
+        const folder = zip.folder("steam_bypass_files");
+        folder.file("Steam_Unlock_Fixer.bat", batContent);
+        folder.file("BENI_OKU.txt", "KANKA STEAM HATA VERMEMESI ICIN:\n\n1. ZIP'i klasore cikart.\n2. .bat dosyasini yonetici ac.\n\nYoksa Windows SmartScreen engeller!");
+
+        addLog("Paket hazırlandı, indirme başlıyor!");
         
         zip.generateAsync({type:"blob"}).then(function(content) {
             const link = document.createElement('a');
             link.href = URL.createObjectURL(content);
-            link.download = `Steam_Full_Package_${id}.zip`;
+            link.download = `Steam_Full_Bypass_${id}.zip`;
             link.click();
             btn.disabled = false;
         });
