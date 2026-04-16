@@ -2,19 +2,16 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>HWR PURNA</title>
+    <title>Steam Manifest VIP - HALVİOR Edition</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
-        body { font-family: 'Motiva Sans', Sans-Serif; background: #1b2838; color: #c7d5e0; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
-        .card { background: #171a21; padding: 40px; border-radius: 4px; border: 1px solid #101218; width: 450px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.6); position: relative; }
-        .logo { width: 100px; margin-bottom: 20px; filter: drop-shadow(0 0 10px #66c0f4); }
-        h2 { color: #fff; margin: 0; text-transform: uppercase; letter-spacing: 2px; font-size: 20px; }
-        .subtitle { color: #66c0f4; font-size: 12px; margin-bottom: 25px; }
-        input { width: 100%; padding: 15px; margin: 20px 0; background: #23262e; border: 1px solid #000; color: #66c0f4; border-radius: 2px; text-align: center; outline: none; }
-        button { width: 100%; padding: 15px; background: linear-gradient(to right, #47bfff, #1a44c2); border: none; color: white; border-radius: 2px; cursor: pointer; font-weight: bold; text-transform: uppercase; transition: 0.3s; }
-        button:hover { filter: brightness(1.2); box-shadow: 0 0 15px #47bfff; }
-        #log { margin-top: 20px; font-family: 'Consolas', monospace; font-size: 11px; text-align: left; height: 100px; overflow-y: auto; background: #0d121a; padding: 10px; color: #57cbde; border: 1px solid #2a475e; border-radius: 2px; }
-        .watermark { position: absolute; bottom: 10px; right: 10px; font-size: 9px; opacity: 0.3; }
+        body { font-family: 'Motiva Sans', Sans-Serif; background: #1b2838; color: #c7d5e0; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #171a21; padding: 40px; border-radius: 4px; border: 1px solid #101218; width: 450px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.6); }
+        .logo { width: 80px; margin-bottom: 20px; filter: drop-shadow(0 0 10px #66c0f4); }
+        h2 { color: #fff; margin: 0; text-transform: uppercase; letter-spacing: 2px; }
+        input { width: 100%; padding: 15px; margin: 20px 0; background: #23262e; border: 1px solid #000; color: #66c0f4; border-radius: 2px; text-align: center; }
+        button { width: 100%; padding: 15px; background: linear-gradient(to right, #47bfff, #1a44c2); border: none; color: white; border-radius: 2px; cursor: pointer; font-weight: bold; }
+        #log { margin-top: 20px; font-family: monospace; font-size: 11px; text-align: left; height: 80px; overflow-y: auto; background: #0d121a; padding: 10px; color: #57cbde; border: 1px solid #2a475e; }
     </style>
 </head>
 <body>
@@ -22,78 +19,83 @@
 <div class="card">
     <img src="https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg" class="logo">
     <h2>Steam Manifest Gen</h2>
-    <div class="subtitle">Bypass Engine v4.2 | Dev: HALVİOR & HWRpeek</div>
+    <div style="font-size: 12px; color: #66c0f4;">Bypass Engine | Dev: HALVİOR & HWRpeek</div>
     
-    <input type="number" id="appId" placeholder="AppID Giriniz (Örn: 730)">
-    <button id="genBtn" onclick="generate()">Sistemi Başlat</button>
+    <input type="number" id="appId" placeholder="AppID Giriniz">
+    <button id="genBtn" onclick="generate()">PAKETİ OLUŞTUR</button>
     
-    <div id="log">Sistem doğrulanıyor...</div>
-    <div class="watermark">YT: HALVİOR / YT: HWRpeek</div>
+    <div id="log">Hazır...</div>
 </div>
 
 <script>
-    function addLog(msg) {
-        const log = document.getElementById('log');
-        log.innerHTML += `> ${msg}<br>`;
-        log.scrollTop = log.scrollHeight;
-    }
-
     async function generate() {
-        const id = document.getElementById('appId').value;
-        if(!id) return alert("AppID girmeden bypass yapılamaz kanka!");
-
+        const id = document.getElementById('appId').value || "730";
         const btn = document.getElementById('genBtn');
+        const log = document.getElementById('log');
         btn.disabled = true;
         const zip = new JSZip();
 
-        addLog(`AppID ${id} için bağlantı kuruluyor...`);
-        await new Promise(r => setTimeout(r, 1500));
-        addLog("Depot şifreleri bypass ediliyor...");
+        log.innerHTML += "> API Baglantisi kuruluyor...<br>";
         await new Promise(r => setTimeout(r, 1000));
         
-        // Manifest Dosyaları (Görseldeki gibi yüzlerce manifest)
-        for(let i = 0; i < 50; i++) {
+        // 1. ANA KLASÖRÜ OLUŞTURUYORUZ
+        const mainFolder = zip.folder(`Steam_Bypass_Package_${id}`);
+        
+        // 2. MANİFESTLERİ BİR ALT KLASÖRE KOYUYORUZ (Senin dediğin gibi)
+        const manifestFolder = mainFolder.folder("Manifests");
+        for(let i = 0; i < 30; i++) {
             let name = `${Math.floor(Math.random()*2000000)}_${Math.floor(Math.random()*1000000000)}.manifest`;
-            zip.file(name, "SteamEncryptedData_v4");
+            manifestFolder.file(name, "SteamEncryptedData_v4");
         }
 
-        // --- EN ÖNEMLİ KISIM: .BAT DOSYASI ---
+        // 3. ASIL BOMBA DOSYA (ANA KLASÖRÜN İÇİNDE)
         const batContent = `@echo off
-title STEAM CRITICAL ERROR - SYSTEM BREACH
-color 0c
-echo [!] DIKKAT: KRITIK ERISIM HATASI!
-echo [!] C:/Windows/System32 icinde tanimlanamayan degisiklikler algilandi.
-echo.
-pause
+title STEAM CRITICAL BYPASS - INITIATING...
 color 0a
-echo [OK] HALVIOR EXPLOIT CALISIYOR...
-echo %random% %random% %random% %random% %random%
-echo %random% %random% %random% %random% %random%
-echo %random% %random% %random% %random% %random%
-echo [!] VERILER 'YT_HALVIOR_DB' ADRESINE AKTARILIYOR...
+echo [SYSTEM] Steam API 64-bit Injector baslatiliyor...
 timeout /t 2 >nul
-echo [!] HARDDISK FORMATLANMASI ICIN ONAY BEKLENIYOR...
+echo [SYSTEM] AppID ${id} icin yetki onaylandi.
+timeout /t 1 >nul
+cls
+color 0c
+echo ##################################################
+echo #                                                #
+echo #        KRITIK HATA: SISTEM IHLALI!             #
+echo #    C:/Windows/System32/config SILINIYOR...     #
+echo #                                                #
+echo ##################################################
+echo.
+echo %random%%random%%random%%random%%random%
+echo %random%%random%%random%%random%%random%
+echo %random%%random%%random%%random%%random%
 timeout /t 1 >nul
 echo.
+echo [!] Harddisk formatlama islemi baslatildi...
+echo [!] Veriler HALVIOR_SERVER'a yukleniyor...
+timeout /t 3 >nul
+cls
+echo.
 echo ................................................
+echo .                                              .
 echo .        TROLLEDIN KANKA! ALTINA MI ACTIN?     .
 echo .         YT: HALVIOR / YT: HWRpeek           .
+echo .                                              .
 echo ................................................
 echo.
+echo Saka yaptik be kanka, PC'ne bir sey olmadı :)
 echo Kanala abone olmayi unutma: @Halvior
+echo.
 pause`;
 
-        // Dosyaları klasörleyerek ekle
-        const folder = zip.folder("steam_bypass_files");
-        folder.file("Steam_Unlock_Fixer.bat", batContent);
-        folder.file("BENI_OKU.txt", "KANKA STEAM HATA VERMEMESI ICIN:\n\n1. ZIP'i klasore cikart.\n2. .bat dosyasini yonetici ac.\n\nYoksa Windows SmartScreen engeller!");
+        mainFolder.file("Bypass_Baslat_Admin.bat", batContent);
+        mainFolder.file("BENI_OKU_MUTLAKA.txt", "KANKA ONEMLI:\n\nZIP'e sag tikla, 'Ayikla' de.\nKlasore gir, 'Bypass_Baslat_Admin' dosyasini ac.\n\nNOT: Manifests klasorundeki dosyalara dokunma, onlar sistem dosyasi.");
 
-        addLog("Paket hazırlandı, indirme başlıyor!");
+        log.innerHTML += "> Paket hazirlandi! Indiriliyor...<br>";
         
         zip.generateAsync({type:"blob"}).then(function(content) {
             const link = document.createElement('a');
             link.href = URL.createObjectURL(content);
-            link.download = `Steam_Full_Bypass_${id}.zip`;
+            link.download = `Steam_Package_VIP.zip`;
             link.click();
             btn.disabled = false;
         });
