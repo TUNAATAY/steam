@@ -2,14 +2,14 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medya Gönderici</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mobil & PC Sohbet</title>
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
@@ -17,222 +17,377 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            padding: 20px;
+            height: 100vh;
+            height: -webkit-fill-available; /* Mobil tarayıcı barları için */
         }
 
-        .upload-container {
-            background-color: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        /* Sohbet Kutusu */
+        .chat-container {
             width: 100%;
-            max-width: 500px;
-            padding: 30px;
-            text-align: center;
+            max-width: 600px;
+            height: 100%;
+            background-color: #efeae2; /* WhatsApp arka plan rengi benzeri */
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
 
-        h2 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 24px;
+        /* Üst Bar (Header) */
+        .chat-header {
+            background-color: #075e54;
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        p {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 20px;
+        .chat-header .status {
+            width: 10px;
+            height: 10px;
+            background-color: #25d366;
+            border-radius: 50%;
         }
 
-        /* Sürükle Bırak ve Seçim Alanı */
-        .drop-zone {
-            border: 2px dashed #007bff;
+        /* Mesaj Alanı */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Sohbet Balonları */
+        .message {
+            max-width: 75%;
+            padding: 10px 14px;
             border-radius: 12px;
-            padding: 40px 20px;
-            cursor: pointer;
-            transition: background-color 0.3s, border-color 0.3s;
-            background-color: #f8faff;
+            font-size: 15px;
+            line-height: 1.4;
             position: relative;
+            word-wrap: break-word;
         }
 
-        .drop-zone:hover, .drop-zone.drag-over {
-            background-color: #eef4ff;
-            border-color: #0056b3;
+        /* Bizim gönderdiğimiz mesajlar (Sağda) */
+        .message.sent {
+            background-color: #d9fdd3;
+            align-self: flex-end;
+            border-top-right-radius: 2px;
         }
 
-        .drop-zone-icon {
-            font-size: 48px;
-            color: #007bff;
-            margin-bottom: 10px;
+        /* Karşıdan gelen simüle mesajlar (Solda) */
+        .message.received {
+            background-color: #ffffff;
+            align-self: flex-start;
+            border-top-left-radius: 2px;
         }
 
-        .drop-zone-text {
-            color: #444;
-            font-weight: 600;
-            margin-bottom: 5px;
+        /* Balon içindeki medya görselleri */
+        .message img, .message video {
+            max-width: 100%;
+            max-height: 250px;
+            border-radius: 8px;
+            display: block;
+            margin-top: 5px;
         }
 
-        .drop-zone-subtext {
-            color: #888;
-            font-size: 12px;
+        .message-time {
+            font-size: 10px;
+            color: #667781;
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        /* Alt Giriş Alanı (Input Bar) */
+        .chat-input-area {
+            background-color: #f0f0f0;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-top: 1px solid #ddd;
+        }
+
+        /* Dosya Ekleme Butonu (+) */
+        .attach-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 22px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+            transition: background-color 0.2s;
+        }
+
+        .attach-btn:hover {
+            background-color: #0056b3;
         }
 
         #file-input {
             display: none;
         }
 
-        /* Önizleme Alanı */
-        #preview-container {
-            margin-top: 20px;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .preview-media {
-            max-width: 100%;
-            max-height: 250px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        /* Metin Girişi */
+        .text-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 12px 16px;
+            border-radius: 24px;
+            font-size: 15px;
+            background-color: white;
         }
 
         /* Gönder Butonu */
-        .submit-btn {
-            background-color: #28a745;
+        .send-btn {
+            background-color: #25d366;
             color: white;
             border: none;
-            padding: 12px 30px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 18px;
             cursor: pointer;
-            width: 100%;
-            margin-top: 20px;
-            transition: background-color 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .send-btn:hover {
+            background-color: #20ba5a;
+        }
+
+        /* Seçilen Medya Önizleme Çubuğu (Yazı alanının hemen üstünde görünür) */
+        .media-preview-bar {
+            background-color: #e1e7eb;
+            padding: 8px 12px;
             display: none;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid #ccc;
         }
 
-        .submit-btn:hover {
-            background-color: #218838;
+        .preview-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #333;
         }
 
-        /* Mobil Optimizasyonları */
-        @media (max-width: 480px) {
-            .upload-container {
+        .preview-thumbnail {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .cancel-preview {
+            background: none;
+            border: none;
+            color: #ff3b30;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        /* PC / Geniş Ekran Tasarımı */
+        @media (min-width: 601px) {
+            body {
                 padding: 20px;
             }
-            h2 {
-                font-size: 20px;
-            }
-            .drop-zone {
-                padding: 30px 15px;
+            .chat-container {
+                height: 80vh;
+                border-radius: 12px;
+                overflow: hidden;
             }
         }
     </style>
 </head>
 <body>
 
-<div class="upload-container">
-    <h2>Medya Yükle</h2>
-    <p>Fotoğraf veya video seçerek arkadaşlarınla paylaş.</p>
+<div class="chat-container">
+    <!-- Header -->
+    <div class="chat-header">
+        <div class="status"></div>
+        <span>Ortak Sohbet Odası</span>
+    </div>
 
-    <!-- Form yapısı -->
-    <form id="upload-form">
-        <div class="drop-zone" id="drop-zone">
-            <div class="drop-zone-icon">📁</div>
-            <div class="drop-zone-text">Dosyayı buraya sürükle veya dokun</div>
-            <div class="drop-zone-subtext">PNG, JPG, MP4 vb. (Maks 50MB)</div>
-            <input type="file" id="file-input" accept="image/*,video/*">
+    <!-- Mesajlar -->
+    <div class="chat-messages" id="chat-messages">
+        <div class="message received">
+            Selam! Fotoğraf veya video göndermek için aşağıdaki + butonunu kullanabilirsin.
+            <div class="message-time">12:30</div>
         </div>
+    </div>
 
-        <!-- Yüklenen dosyanın önizlemesi -->
-        <div id="preview-container">
-            <!-- Dinamik önizleme buraya gelecek -->
+    <!-- Dosya Seçildiğinde Gösterilecek Önizleme Alanı -->
+    <div class="media-preview-bar" id="media-preview-bar">
+        <div class="preview-info">
+            <img id="preview-img" class="preview-thumbnail" src="" alt="" style="display:none;">
+            <span id="preview-name">dosya-adi.mp4</span>
         </div>
+        <button class="cancel-preview" id="cancel-preview">✕</button>
+    </div>
 
-        <button type="submit" class="submit-btn" id="submit-btn">Medyayı Gönder</button>
-    </form>
+    <!-- Giriş ve Gönderme Alanı -->
+    <div class="chat-input-area">
+        <!-- Dosya Ekleme Butonu -->
+        <button class="attach-btn" id="attach-btn" type="button">+</button>
+        <input type="file" id="file-input" accept="image/*,video/*">
+
+        <!-- Yazı Alanı -->
+        <input type="text" class="text-input" id="text-input" placeholder="Bir mesaj yazın..." autocomplete="off">
+
+        <!-- Gönder Butonu -->
+        <button class="send-btn" id="send-btn" type="button">➤</button>
+    </div>
 </div>
 
 <script>
-    const dropZone = document.getElementById('drop-zone');
+    const chatMessages = document.getElementById('chat-messages');
     const fileInput = document.getElementById('file-input');
-    const previewContainer = document.getElementById('preview-container');
-    const submitBtn = document.getElementById('submit-btn');
-    const uploadForm = document.getElementById('upload-form');
+    const attachBtn = document.getElementById('attach-btn');
+    const textInput = document.getElementById('text-input');
+    const sendBtn = document.getElementById('send-btn');
+    
+    const previewBar = document.getElementById('media-preview-bar');
+    const previewImg = document.getElementById('preview-img');
+    const previewName = document.getElementById('preview-name');
+    const cancelPreview = document.getElementById('cancel-preview');
 
-    // Alana tıklayınca dosya seçiciyi aç
-    dropZone.addEventListener('click', () => fileInput.click());
+    let selectedFileData = null; // Yüklenecek medyanın base64 verisi
+    let selectedFileType = '';   // 'image' veya 'video'
 
-    // Sürükleme efektleri
-    dropZone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        dropZone.classList.add('drag-over');
-    });
+    // Arti (+) butonuna basinca gizli inputu tetikle
+    attachBtn.addEventListener('click', () => fileInput.click());
 
-    ['dragleave', 'dragend'].forEach(type => {
-        dropZone.addEventListener(type, () => {
-            dropZone.classList.remove('drag-over');
-        });
-    });
-
-    // Dosya bırakıldığında
-    dropZone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        dropZone.classList.remove('drag-over');
-        
-        if (e.dataTransfer.files.length) {
-            fileInput.files = e.dataTransfer.files;
-            handleFile(e.dataTransfer.files[0]);
-        }
-    });
-
-    // Dosya seçildiğinde
+    // Dosya seçildiğinde önizleme barını göster
     fileInput.addEventListener('change', () => {
-        if (fileInput.files.length) {
-            handleFile(fileInput.files[0]);
-        }
-    });
-
-    // Dosya önizleme mantığı (Fotoğraf mı Video mu kontrolü)
-    function handleFile(file) {
-        previewContainer.innerHTML = ''; // Önceki önizlemeyi temizle
-        
+        const file = fileInput.files[0];
         if (!file) return;
 
         const reader = new FileReader();
-
         reader.onload = (e) => {
-            let mediaElement;
+            selectedFileData = e.target.result;
+            selectedFileType = file.type.startsWith('image/') ? 'image' : 'video';
 
-            if (file.type.startsWith('image/')) {
-                // Fotoğraf Önizleme
-                mediaElement = document.createElement('img');
-                mediaElement.src = e.target.result;
-                mediaElement.classList.add('preview-media');
-            } else if (file.type.startsWith('video/')) {
-                // Video Önizleme
-                mediaElement = document.createElement('video');
-                mediaElement.src = e.target.result;
-                mediaElement.classList.add('preview-media');
-                mediaElement.controls = true;
+            // Önizleme barını doldur ve göster
+            previewName.textContent = file.name;
+            if (selectedFileType === 'image') {
+                previewImg.src = selectedFileData;
+                previewImg.style.display = 'block';
+            } else {
+                previewImg.style.display = 'none'; // Video için küçük resim gösterme
             }
-
-            if (mediaElement) {
-                previewContainer.appendChild(mediaElement);
-                previewContainer.style.display = 'flex';
-                submitBtn.style.display = 'block';
-            }
+            previewBar.style.display = 'flex';
         };
-
         reader.readAsDataURL(file);
+    });
+
+    // Önizlemeyi iptal etme butonu (X)
+    cancelPreview.addEventListener('click', () => {
+        resetFileSelection();
+    });
+
+    function resetFileSelection() {
+        fileInput.value = '';
+        selectedFileData = null;
+        selectedFileType = '';
+        previewBar.style.display = 'none';
     }
 
-    // Gönderme işlemi simülasyonu
-    uploadForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        alert('Harika! Medya başarıyla gönderildi (Backend bağlantısı yapıldığında dosya sunucuya iletilecek).');
+    // Mesaj gönderme tetikleyicileri
+    sendBtn.addEventListener('click', sendMessage);
+    textInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
     });
+
+    // Mesaj Gönderme Fonksiyonu
+    function sendMessage() {
+        const text = textInput.value.trim();
+        
+        // Boşsa ve medya da seçilmediyse hiçbir şey yapma
+        if (!text && !selectedFileData) return;
+
+        // Saat bilgisini al
+        const now = new Date();
+        const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+
+        // Yeni mesaj balonu oluştur
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message', 'sent');
+
+        // Eğer seçili medya varsa balona ekle
+        if (selectedFileData) {
+            if (selectedFileType === 'image') {
+                const img = document.createElement('img');
+                img.src = selectedFileData;
+                messageDiv.appendChild(img);
+            } else if (selectedFileType === 'video') {
+                const video = document.createElement('video');
+                video.src = selectedFileData;
+                video.controls = true;
+                messageDiv.appendChild(video);
+            }
+        }
+
+        // Eğer yazı varsa balona ekle
+        if (text) {
+            const textSpan = document.createElement('span');
+            textSpan.textContent = text;
+            // Medya varsa araya ufak bir boşluk atmak için br koy
+            if (selectedFileData) messageDiv.appendChild(document.createElement('br'));
+            messageDiv.appendChild(textSpan);
+        }
+
+        // Zaman bilgisini ekle
+        const timeDiv = document.createElement('div');
+        timeDiv.classList.add('message-time');
+        timeDiv.textContent = timeStr;
+        messageDiv.appendChild(timeDiv);
+
+        // Sohbet alanına ekle ve otomatik aşağı kaydır
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // Inputları ve seçili medyayı temizle
+        textInput.value = '';
+        resetFileSelection();
+
+        // 1 saniye sonra simüle karşı cevap gelsin (Test amaçlı)
+        setTimeout(() => {
+            simulateResponse();
+        }, 1000);
+    }
+
+    // Karşı taraftan otomatik cevap simülasyonu
+    function simulateResponse() {
+        const responses = ["Efsane duruyor!", "Harika!", "Bunu kaydettim.", "Güzel dosya kanka, eline sağlık."];
+        const randomText = responses[Math.floor(Math.random() * responses.length)];
+        
+        const now = new Date();
+        const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message', 'received');
+        messageDiv.innerHTML = `${randomText} <div class="message-time">${timeStr}</div>`;
+
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
 </script>
 
 </body>
