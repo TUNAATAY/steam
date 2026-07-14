@@ -2,116 +2,237 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>ŞAKA KNK:D</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medya Gönderici</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #1b2838; color: #c7d5e0; margin: 0; overflow: hidden; }
-        .setup-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; }
-        .card { background: #171a21; padding: 40px; border-radius: 4px; border: 1px solid #2a475e; text-align: center; width: 400px; }
-        button { width: 100%; padding: 15px; background: #66c0f4; border: none; color: #fff; font-weight: bold; cursor: pointer; margin-top: 20px; }
-        
-        /* HACK EKRANI */
-        #hack-screen {
-            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: black; color: #00ff00; font-family: 'Consolas', monospace;
-            padding: 20px; z-index: 9999; box-sizing: border-box; overflow: hidden;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        .error-msg { color: #ff0000; font-weight: bold; animation: blink 0.5s infinite; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } }
-        .shake { animation: shake 0.2s infinite; }
-        @keyframes shake { 0% { transform: translate(1px, 1px); } 20% { transform: translate(-3px, 0px); } 100% { transform: translate(1px, -1px); } }
-        
-        .win-box {
-            position: absolute; width: 300px; background: #f0f0f0; color: black;
-            border: 2px solid #0078d7; padding: 10px; font-size: 12px; font-family: Tahoma, sans-serif;
-            box-shadow: 10px 10px 0px rgba(0,0,0,0.5);
+
+        body {
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .upload-container {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        /* Sürükle Bırak ve Seçim Alanı */
+        .drop-zone {
+            border: 2px dashed #007bff;
+            border-radius: 12px;
+            padding: 40px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s, border-color 0.3s;
+            background-color: #f8faff;
+            position: relative;
+        }
+
+        .drop-zone:hover, .drop-zone.drag-over {
+            background-color: #eef4ff;
+            border-color: #0056b3;
+        }
+
+        .drop-zone-icon {
+            font-size: 48px;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .drop-zone-text {
+            color: #444;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .drop-zone-subtext {
+            color: #888;
+            font-size: 12px;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        /* Önizleme Alanı */
+        #preview-container {
+            margin-top: 20px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .preview-media {
+            max-width: 100%;
+            max-height: 250px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        /* Gönder Butonu */
+        .submit-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: background-color 0.2s;
+            display: none;
+        }
+
+        .submit-btn:hover {
+            background-color: #218838;
+        }
+
+        /* Mobil Optimizasyonları */
+        @media (max-width: 480px) {
+            .upload-container {
+                padding: 20px;
+            }
+            h2 {
+                font-size: 20px;
+            }
+            .drop-zone {
+                padding: 30px 15px;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="setup-screen" id="main">
-    <div class="card">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg" width="80">
-        <h2>Steam Bypass v4.2</h2>
-        <p>HALVİOR x HWRpeek VIP Access</p>
-        <input type="text" placeholder="Steam Profil Linki" style="width:100%; padding:10px; background:#23262e; border:1px solid #000; color:white;">
-        <button onclick="startHack()">ENJEKSIYONU BASLAT</button>
-    </div>
-</div>
+<div class="upload-container">
+    <h2>Medya Yükle</h2>
+    <p>Fotoğraf veya video seçerek arkadaşlarınla paylaş.</p>
 
-<div id="hack-screen">
-    <div id="console"></div>
+    <!-- Form yapısı -->
+    <form id="upload-form">
+        <div class="drop-zone" id="drop-zone">
+            <div class="drop-zone-icon">📁</div>
+            <div class="drop-zone-text">Dosyayı buraya sürükle veya dokun</div>
+            <div class="drop-zone-subtext">PNG, JPG, MP4 vb. (Maks 50MB)</div>
+            <input type="file" id="file-input" accept="image/*,video/*">
+        </div>
+
+        <!-- Yüklenen dosyanın önizlemesi -->
+        <div id="preview-container">
+            <!-- Dinamik önizleme buraya gelecek -->
+        </div>
+
+        <button type="submit" class="submit-btn" id="submit-btn">Medyayı Gönder</button>
+    </form>
 </div>
 
 <script>
-    function startHack() {
-        // Tam ekran yap (Korkutuculuğu artırır)
-        document.documentElement.requestFullscreen();
-        document.getElementById('main').style.display = 'none';
-        const screen = document.getElementById('hack-screen');
-        screen.style.display = 'block';
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const previewContainer = document.getElementById('preview-container');
+    const submitBtn = document.getElementById('submit-btn');
+    const uploadForm = document.getElementById('upload-form');
+
+    // Alana tıklayınca dosya seçiciyi aç
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    // Sürükleme efektleri
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('drag-over');
+    });
+
+    ['dragleave', 'dragend'].forEach(type => {
+        dropZone.addEventListener(type, () => {
+            dropZone.classList.remove('drag-over');
+        });
+    });
+
+    // Dosya bırakıldığında
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
         
-        let lines = [
-            "> [SYSTEM] Bağlantı kuruldu: 192.168.1." + Math.floor(Math.random()*255),
-            "> [SYSTEM] Local Host üzerinden sızılıyor...",
-            "> [DANGER] WINDOWS DEFENDER DEVRE DIŞI BIRAKILDI.",
-            "> [SYSTEM] C:/Users/" + (navigator.platform) + "/Documents erişiliyor...",
-            "> [WARN] Manifest şifreleme anahtarı kırıldı.",
-            "> [DANGER] KRİTİK HATA: KERNEL-LEVEL EXPLOIT TESPİT EDİLDİ!",
-            "--------------------------------------------------",
-            "!!! SISTEM DOSYALARI SILINIYOR: C:/WINDOWS/SYSTEM32 !!!",
-            "DELETING: kernel32.dll ... [OK]",
-            "DELETING: hal.dll ... [OK]",
-            "DELETING: win32k.sys ... [OK]",
-            "DELETING: USER_DATA_PRIVATE ... [IN PROGRESS]",
-            "--------------------------------------------------"
-        ];
-
-        let i = 0;
-        const consoleDiv = document.getElementById('console');
-
-        function printLine() {
-            if (i < lines.length) {
-                let p = document.createElement('div');
-                p.innerHTML = lines[i];
-                if(lines[i].includes("DANGER")) p.className = 'error-msg';
-                consoleDiv.appendChild(p);
-                i++;
-                setTimeout(printLine, 400);
-            } else {
-                startGlitch();
-            }
+        if (e.dataTransfer.files.length) {
+            fileInput.files = e.dataTransfer.files;
+            handleFile(e.dataTransfer.files[0]);
         }
-        printLine();
-    }
+    });
 
-    function startGlitch() {
-        document.body.className = 'shake';
+    // Dosya seçildiğinde
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files.length) {
+            handleFile(fileInput.files[0]);
+        }
+    });
+
+    // Dosya önizleme mantığı (Fotoğraf mı Video mu kontrolü)
+    function handleFile(file) {
+        previewContainer.innerHTML = ''; // Önceki önizlemeyi temizle
         
-        // Sahte Windows Hata Kutuları Çıkar
-        setInterval(() => {
-            let box = document.createElement('div');
-            box.className = 'win-box';
-            box.style.left = Math.random() * 70 + '%';
-            box.style.top = Math.random() * 70 + '%';
-            box.innerHTML = "<b>Critical Error</b><br><br>Harddisk verileri okunamaz hale geldi. Sistem geri döndürülemez.";
-            document.getElementById('hack-screen').appendChild(box);
-        }, 300);
+        if (!file) return;
 
-        // 5 saniye sonra finali yap
-        setTimeout(() => {
-            document.getElementById('hack-screen').innerHTML = `
-                <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; text-align:center;">
-                    <h1 style="font-size:80px; color:yellow;">TROLLEDIN KANKA! 😂</h1>
-                    <h2 style="font-size:40px;">PC'NE BIR SEY OLMADI, SAKIN OL.</h2>
-                    <p style="font-size:25px; color:#66c0f4;">YT: HALVİOR & HWRpeek</p>
-                    <p>Kanala abone ol yoksa harbiden silecem :)</p>
-                    <button onclick="location.reload()" style="width:200px;">ÇIKAR BENİ BURADAN</button>
-                </div>
-            `;
-            document.body.className = '';
-        }, 6000);
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+            let mediaElement;
+
+            if (file.type.startsWith('image/')) {
+                // Fotoğraf Önizleme
+                mediaElement = document.createElement('img');
+                mediaElement.src = e.target.result;
+                mediaElement.classList.add('preview-media');
+            } else if (file.type.startsWith('video/')) {
+                // Video Önizleme
+                mediaElement = document.createElement('video');
+                mediaElement.src = e.target.result;
+                mediaElement.classList.add('preview-media');
+                mediaElement.controls = true;
+            }
+
+            if (mediaElement) {
+                previewContainer.appendChild(mediaElement);
+                previewContainer.style.display = 'flex';
+                submitBtn.style.display = 'block';
+            }
+        };
+
+        reader.readAsDataURL(file);
     }
+
+    // Gönderme işlemi simülasyonu
+    uploadForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert('Harika! Medya başarıyla gönderildi (Backend bağlantısı yapıldığında dosya sunucuya iletilecek).');
+    });
 </script>
 
 </body>
